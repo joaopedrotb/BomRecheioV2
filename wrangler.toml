@@ -5,7 +5,5 @@ pages_build_output_dir = "dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "bom-recheio-db"
-# Preencher database_id com o valor retornado por:
-#   wrangler d1 create bom-recheio-db
-# database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "0bda5c22-a337-44e9-bf98-82107c3eff69"
 migrations_dir = "migrations"
