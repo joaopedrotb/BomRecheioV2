@@ -58,12 +58,14 @@ npm run pages:dev         # front-end + Functions juntos (porta 8788)
 Senhas são armazenadas como hash PBKDF2 (nunca em texto puro). O login
 retorna apenas `{id, nome}` — nunca a senha.
 
-## Vendedores iniciais (provisórios)
+## Cadastrar vendedores reais
+
+Não há usuários de exemplo. Gere o SQL dos vendedores reais e aplique no banco:
 
 ```bash
-npm run seed:local    # 3 vendedores no banco local
-npm run seed:remote   # 3 vendedores no banco remoto
+node scripts/seed.mjs "Maria José" "senha-forte"
+wrangler d1 execute DB --local --file scripts/seed.sql   # banco local
+wrangler d1 execute DB --remote --file scripts/seed.sql  # banco de produção
 ```
 
-Nomes de exemplo (senha provisória `123456`): Mariana Souza, Carlos
-Oliveira e Fernanda Lima. Serão substituídos pelos vendedores reais.
+Você também pode criar o acesso direto pela tela "Criar conta" do app.
