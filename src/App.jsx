@@ -5,6 +5,7 @@ import Login from './telas/Login.jsx'
 import Cadastro from './telas/Cadastro.jsx'
 import Home from './telas/Home.jsx'
 import NovaVenda from './telas/NovaVenda.jsx'
+import NovaDespesa from './telas/NovaDespesa.jsx'
 import './styles/autenticacao.css'
 
 function Telas() {
@@ -18,10 +19,18 @@ function Telas() {
   }
 
   if (usuario) {
-    return telaApp === 'nova-venda' ? (
-      <NovaVenda voltar={() => setTelaApp('home')} />
-    ) : (
-      <Home sair={sairParaHome} irParaVenda={() => setTelaApp('nova-venda')} />
+    if (telaApp === 'nova-venda') {
+      return <NovaVenda voltar={() => setTelaApp('home')} />
+    }
+    if (telaApp === 'nova-despesa') {
+      return <NovaDespesa voltar={() => setTelaApp('home')} />
+    }
+    return (
+      <Home
+        sair={sairParaHome}
+        irParaVenda={() => setTelaApp('nova-venda')}
+        irParaDespesa={() => setTelaApp('nova-despesa')}
+      />
     )
   }
 

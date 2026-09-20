@@ -1,0 +1,116 @@
+/* ============================================================
+   Bom Recheio — Tela Nova Despesa
+   Reutiliza a casca de formulário de nova-venda.css
+   (.conteudo-form, .form-venda, .bloco-form, .rotulo-grupo,
+   .cabecalho-form, .voltar-link) e .aviso-erro global.
+   ============================================================ */
+
+.tela-nova-despesa {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Lista de seleção dos itens ---- */
+
+.lista-itens {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: var(--borda-fina);
+}
+
+.lista-itens li {
+  border-bottom: var(--borda-fina);
+}
+
+.item-opcao {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  width: 100%;
+  min-height: 52px;
+  padding: var(--espaco-2) 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--fonte-corpo);
+  font-size: var(--corpo);
+  color: var(--cor-texto);
+  text-align: left;
+  transition: color var(--transicao);
+}
+
+.item-opcao.ativo {
+  color: var(--cor-marrom-torrado);
+  font-weight: 600;
+}
+
+.nome-item {
+  flex: 1;
+}
+
+.indicador {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  border: 1.5px solid var(--cor-marrom-divisoria);
+  border-radius: 999px;
+  transition: border-color var(--transicao);
+}
+
+.item-opcao.ativo .indicador {
+  border-color: var(--cor-dourado);
+}
+
+.item-opcao.ativo .indicador::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  background: var(--cor-dourado);
+  border-radius: 999px;
+}
+
+@media (min-width: 640px) {
+  .lista-itens {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--espaco-4);
+  }
+
+  .lista-itens li {
+    border-bottom: none;
+  }
+
+  .item-opcao {
+    padding-inline: var(--espaco-2);
+  }
+}
+
+/* ---- Barra de ações (fixa no rodapé) ---- */
+
+.nova-despesa-acoes {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: var(--espaco-3);
+  padding: var(--espaco-4);
+  padding-bottom: calc(var(--espaco-4) + env(safe-area-inset-bottom, 0px));
+  background: var(--cor-fundo);
+  border-top: var(--borda-fina);
+  margin-top: auto;
+}
+
+.rodape-despesa {
+  width: 100%;
+  max-width: 640px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+}
+
+.rodape-despesa .aviso-erro {
+  margin: 0;
+}

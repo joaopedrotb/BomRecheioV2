@@ -6,7 +6,8 @@ import { moeda } from '../formatar.js'
 import { useUsuario } from '../contexto/useUsuario.js'
 import './../styles/nova-venda.css'
 
-const PACOTES = [100, 50]
+const PACOTES_100 = 100
+const PACOTES_50 = 50
 const PAGAMENTOS = ['Dinheiro', 'Pix', 'Cartão']
 const SABORES = [
   'Coxinha',
@@ -31,7 +32,8 @@ function precoBase(pacote, pagamento) {
 
 function NovaVenda({ voltar }) {
   const { usuario } = useUsuario()
-  const [pacote, setPacote] = useState(100)
+  const [qtd100, setQtd100] = useState('')
+  const [qtd50, setQtd50] = useState('')
   const [pagamento, setPagamento] = useState('Pix')
   const [quantidades, setQuantidades] = useState(() =>
     Object.fromEntries(SABORES.map((sabor) => [sabor, ''])),
@@ -45,22 +47,29 @@ function NovaVenda({ voltar }) {
     setQuantidades((atual) => ({ ...atual, [sabor]: valor }))
   }
 
+  const n100 = Number(qtd100) || 0
+  const n50 = Number(qtd50) || 0
+  const unidadesEsperadas = n100 * PACOTES_100 + n50 * PACOTES_50
+
   const soma = SABORES.reduce(
     (total, sabor) => total + (Number(quantidades[sabor]) || 0),
     0,
   )
-  const falta = pacote - soma
-  const pacoteOk = soma === pacote
+  const falta = unidadesEsperadas - soma
+  const pacoteOk = unidadesEsperadas > 0 && soma === unidadesEsperadas
 
   const statusSom =
-    pacoteOk
-      ? `Pacote completo: ${soma} de ${pacote} unidades.`
-      : falta > 0
-        ? `Faltam ${falta} unidades para completar o pacote de ${pacote}.`
-        : `A soma passou o pacote em ${Math.abs(falta)} unidades.`
+    unidadesEsperadas === 0
+      ? 'Informe ao menos um pacote: o total de unidades fica zero.'
+      : pacoteOk
+        ? `Pacote completo: ${soma} de ${unidadesEsperadas} unidades.`
+        : falta > 0
+          ? `Faltam ${falta} unidades para completar ${unidadesEsperadas}.`
+          : `A soma passou em ${Math.abs(falta)} unidades.`
 
   const taxaNumero = Number(taxa) || 0
-  const base = precoBase(pacote, pagamento)
+  const base =
+    n100 * precoBase(PACOTES_100, pagamento) + n50 * precoBase(PACOTES_50, pagamento)
   const total = base + taxaNumero
   const podeRegistrar = pacoteOk && nomeComprador.trim() !== '' && !salvando
 
@@ -74,7 +83,8 @@ function NovaVenda({ voltar }) {
       corpo: {
         vendedor: usuario.nome,
         nome_comprador: nomeComprador.trim(),
-        tipo_pacote: `Pacote ${pacote} unidades`,
+        qtd_pacotes_100: n100,
+        qtd_pacotes_50: n50,
         forma_pagamento: pagamento,
         taxa_entrega: taxaNumero,
         valor_total: total,
@@ -104,20 +114,34 @@ function NovaVenda({ voltar }) {
 
       <form id="nova-venda" className="form-venda" onSubmit={registrar}>
         <div className="bloco-form">
-          <p className="rotulo-grupo">Pacote</p>
-          <div className="seletor-pacote">
-            {PACOTES.map((tamanho) => (
-              <button
-                key={tamanho}
-                type="button"
-                className={`btn-opcao ${pacote === tamanho ? 'ativo' : ''}`}
-                aria-pressed={pacote === tamanho}
-                onClick={() => setPacote(tamanho)}
-              >
-                {tamanho} unidades
-              </button>
-            ))}
+          <p className="rotulo-grupo">Pacotes</p>
+          <div className="grade-pacotes">
+            <Campo
+              id="nova-venda-qtd-100"
+              label="Pacotes de 100 unidades"
+              type="number"
+              min="0"
+              step="1"
+              inputMode="numeric"
+              placeholder="0"
+              value={qtd100}
+              onChange={(e) => setQtd100(e.target.value)}
+            />
+            <Campo
+              id="nova-venda-qtd-50"
+              label="Pacotes de 50 unidades"
+              type="number"
+              min="0"
+              step="1"
+              inputMode="numeric"
+              placeholder="0"
+              value={qtd50}
+              onChange={(e) => setQtd50(e.target.value)}
+            />
           </div>
+          <p className="texto-suave">
+            Total esperado: {unidadesEsperadas} unidades. Cada pacote pode ser 0.
+          </p>
 
           <p className="rotulo-grupo">Forma de pagamento</p>
           <div className="opcoes-pagamento">

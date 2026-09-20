@@ -84,12 +84,18 @@
   color: var(--cor-marrom-suave);
 }
 
-/* ---- Seletores (pacote e pagamento) ---- */
+/* ---- Pacotes (100 e 50 unidades) ---- */
 
-.seletor-pacote {
+.grade-pacotes {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--espaco-3);
+}
+
+@media (max-width: 639px) {
+  .grade-pacotes {
+    grid-template-columns: 1fr;
+  }
 }
 
 .opcoes-pagamento {

@@ -13,15 +13,24 @@ export async function onRequestGet({ env, request }) {
 
 export async function onRequestPost({ env, request }) {
   const body = await jsonBody(request);
-  const { vendedor, nome_comprador, tipo_pacote, forma_pagamento, itens } = body ?? {};
+  const { vendedor, nome_comprador, forma_pagamento, itens, qtd_pacotes_100, qtd_pacotes_50 } = body ?? {};
   const taxa_entrega = Number(body?.taxa_entrega ?? 0);
   const valor_total = Number(body?.valor_total ?? 0);
 
-  if (!vendedor || !nome_comprador || !tipo_pacote || !forma_pagamento) {
-    return fail('Campos obrigatórios: vendedor, nome_comprador, tipo_pacote, forma_pagamento');
+  if (!vendedor || !nome_comprador || !forma_pagamento) {
+    return fail('Campos obrigatórios: vendedor, nome_comprador, forma_pagamento');
   }
   if (Number.isNaN(taxa_entrega) || Number.isNaN(valor_total)) {
     return fail('taxa_entrega e valor_total devem ser numéricos');
+  }
+
+  const n100 = Number(qtd_pacotes_100 ?? 0);
+  const n50 = Number(qtd_pacotes_50 ?? 0);
+  if (!Number.isInteger(n100) || n100 < 0 || !Number.isInteger(n50) || n50 < 0) {
+    return fail('qtd_pacotes_100 e qtd_pacotes_50 devem ser inteiros maiores ou iguais a zero');
+  }
+  if (n100 === 0 && n50 === 0) {
+    return fail('informe ao menos um pacote (100 ou 50 unidades)');
   }
 
   const listaItens = Array.isArray(itens) ? itens : [];
@@ -33,10 +42,10 @@ export async function onRequestPost({ env, request }) {
   }
 
   const { meta } = await env.DB.prepare(
-    `INSERT INTO vendas (vendedor, nome_comprador, tipo_pacote, forma_pagamento, taxa_entrega, valor_total)
-     VALUES (?, ?, ?, ?, ?, ?)`
+    `INSERT INTO vendas (vendedor, nome_comprador, qtd_pacotes_100, qtd_pacotes_50, forma_pagamento, taxa_entrega, valor_total)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`
   )
-    .bind(vendedor, nome_comprador, tipo_pacote, forma_pagamento, taxa_entrega, valor_total)
+    .bind(vendedor, nome_comprador, n100, n50, forma_pagamento, taxa_entrega, valor_total)
     .run();
 
   const idVenda = meta.last_row_id;

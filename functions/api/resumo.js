@@ -2,6 +2,19 @@ import { ok, fail } from '../_shared/json.js';
 
 const DIA_MS = 24 * 60 * 60 * 1000;
 
+function descrevePacotes(venda) {
+  const partes = [];
+  if (Number(venda.qtd_pacotes_100) > 0) {
+    const n = Number(venda.qtd_pacotes_100);
+    partes.push(`${n} pacote${n === 1 ? '' : 's'} de 100`);
+  }
+  if (Number(venda.qtd_pacotes_50) > 0) {
+    const n = Number(venda.qtd_pacotes_50);
+    partes.push(`${n} pacote${n === 1 ? '' : 's'} de 50`);
+  }
+  return partes.join(' + ');
+}
+
 function formatoSql(d) {
   const p = (n) => String(n).padStart(2, '0');
   return `${d.getUTCFullYear()}-${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}`;
@@ -66,7 +79,7 @@ export async function onRequestGet({ env, request }) {
   const [rEntrada, rSaida, rVendas, rDespesas, rSabores, rClientes] = await env.DB.batch([
     ligar('SELECT COALESCE(SUM(valor_total), 0) AS total FROM vendas WHERE data_hora >= ?'),
     ligar('SELECT COALESCE(SUM(preco), 0) AS total FROM despesas WHERE data_hora >= ?'),
-    ligar('SELECT id, data_hora, vendedor, nome_comprador, tipo_pacote, valor_total FROM vendas WHERE data_hora >= ? ORDER BY data_hora DESC, id DESC LIMIT 5'),
+    ligar('SELECT id, data_hora, vendedor, nome_comprador, qtd_pacotes_100, qtd_pacotes_50, valor_total FROM vendas WHERE data_hora >= ? ORDER BY data_hora DESC, id DESC LIMIT 5'),
     ligar('SELECT id, data_hora, item, descricao, preco, registrado_por FROM despesas WHERE data_hora >= ? ORDER BY data_hora DESC, id DESC LIMIT 5'),
     ligar('SELECT it.sabor AS sabor, SUM(it.quantidade) AS total FROM itens_venda it JOIN vendas v ON v.id = it.id_venda WHERE v.data_hora >= ? GROUP BY it.sabor'),
     ligar('SELECT nome_comprador AS comprador, COUNT(*) AS total FROM vendas WHERE data_hora >= ? GROUP BY nome_comprador'),
@@ -79,7 +92,7 @@ export async function onRequestGet({ env, request }) {
     tipo: 'venda',
     id: `v${v.id}`,
     data_hora: v.data_hora,
-    titulo: `Venda — ${v.tipo_pacote}`,
+    titulo: `Venda — ${descrevePacotes(v)}`,
     sub: `${v.nome_comprador} · ${v.vendedor}`,
     valor: Number(v.valor_total),
   }));
