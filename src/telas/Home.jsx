@@ -1,55 +1,87 @@
+import { useEffect, useState } from 'react'
+import { api } from '../api.js'
 import { moeda } from '../formatar.js'
-import { useUsuario } from '../contexto/useUsuario.js'
 import Button from '../components/Button.jsx'
+import { useUsuario } from '../contexto/useUsuario.js'
 import './../styles/home.css'
 
-const PERIODOS = ['Hoje', 'Semana', 'Mês']
-
-const RECENTES = [
-  {
-    tipo: 'venda',
-    nome: 'Venda — Pacote 500g coco',
-    detalhe: 'Mariana · hoje',
-    valor: 38,
-  },
-  {
-    tipo: 'venda',
-    nome: 'Venda — taxa de entrega',
-    detalhe: 'Carlos · hoje',
-    valor: 6,
-  },
-  {
-    tipo: 'despesa',
-    nome: 'Despesa — chocolate em pó',
-    detalhe: 'mercado',
-    valor: 12.5,
-  },
-  {
-    tipo: 'venda',
-    nome: 'Venda — Pacote 250g brigadeiro',
-    detalhe: 'Fernanda · ontem',
-    valor: 24,
-  },
-  {
-    tipo: 'despesa',
-    nome: 'Despesa — embalagens de kraft',
-    detalhe: 'papelaria',
-    valor: 8,
-  },
+const PERIODOS = [
+  { rotulo: 'Hoje', valor: 'hoje' },
+  { rotulo: 'Semana', valor: 'semana' },
+  { rotulo: 'Mês', valor: 'mes' },
 ]
 
-const ESTATISTICAS = [
-  { rotulo: 'Sabores mais vendidos', valor: 'Chocolate', detalhe: '42 unidades' },
-  { rotulo: 'Sabores menos vendidos', valor: 'Goiabada', detalhe: '3 unidades' },
-  { rotulo: 'Cliente que mais compra', valor: 'Dona Célia', detalhe: moeda(480) },
-  { rotulo: 'Cliente que menos compra', valor: 'Sr. Antônio', detalhe: moeda(12) },
-]
+function unidades(total) {
+  return total === 1 ? '1 unidade' : `${total} unidades`
+}
+
+function compras(total) {
+  return total === 1 ? '1 compra' : `${total} compras`
+}
 
 function Home({ sair }) {
   const { usuario } = useUsuario()
+  const [periodo, setPeriodo] = useState('semana')
+  const [estado, setEstado] = useState({ dados: null, erro: '' })
+
+  useEffect(() => {
+    let ativo = true
+    api(`/resumo?periodo=${periodo}`)
+      .then((resposta) => {
+        if (ativo) setEstado({ periodoConsultado: periodo, dados: resposta, erro: '' })
+      })
+      .catch((err) => {
+        if (ativo) setEstado((atual) => ({ ...atual, erro: err.message }))
+      })
+    return () => {
+      ativo = false
+    }
+  }, [periodo])
+
+  const consultar = (periodoNovo) => setPeriodo(periodoNovo)
+
+  const carregando = estado.dados === null || estado.periodoConsultado !== periodo
+
+  const { dados, erro } = estado
+  const entrada = dados?.entrada
+  const saida = dados?.saida
+  const saldo = dados?.saldo
+  const recentes = dados?.recentes ?? []
+  const estatisticas = dados?.estatisticas
+
+  const itensEstatisticas = [
+    {
+      rotulo: 'Sabores mais vendidos',
+      valor: estatisticas?.sabor_mais_vendido?.sabor ?? '—',
+      detalhe: estatisticas?.sabor_mais_vendido?.sabor
+        ? unidades(estatisticas.sabor_mais_vendido.quantidade)
+        : 'sem vendas no período',
+    },
+    {
+      rotulo: 'Sabores menos vendidos',
+      valor: estatisticas?.sabor_menos_vendido?.sabor ?? '—',
+      detalhe: estatisticas?.sabor_menos_vendido?.sabor
+        ? unidades(estatisticas.sabor_menos_vendido.quantidade)
+        : 'sem vendas no período',
+    },
+    {
+      rotulo: 'Cliente que mais compra',
+      valor: estatisticas?.cliente_que_mais_compra?.nome_comprador ?? '—',
+      detalhe: estatisticas?.cliente_que_mais_compra?.nome_comprador
+        ? compras(estatisticas.cliente_que_mais_compra.compras)
+        : 'sem vendas no período',
+    },
+    {
+      rotulo: 'Cliente que menos compra',
+      valor: estatisticas?.cliente_que_menos_compra?.nome_comprador ?? '—',
+      detalhe: estatisticas?.cliente_que_menos_compra?.nome_comprador
+        ? compras(estatisticas.cliente_que_menos_compra.compras)
+        : 'sem vendas no período',
+    },
+  ]
 
   return (
-    <div className="home">
+    <div className={carregando && dados ? 'home carregando' : 'home'}>
       <header className="topo-home">
         <div className="linha-topo">
           <h1>Olá, {usuario?.nome}.</h1>
@@ -59,34 +91,41 @@ function Home({ sair }) {
         </div>
 
         <div className="filtro-periodo" role="tablist" aria-label="Filtrar por período">
-          {PERIODOS.map((periodo, indice) => (
+          {PERIODOS.map((item) => (
             <button
-              key={periodo}
+              key={item.valor}
               type="button"
               role="tab"
-              aria-selected={indice === 1}
-              className={indice === 1 ? 'ativo' : undefined}
+              aria-selected={periodo === item.valor}
+              className={periodo === item.valor ? 'ativo' : undefined}
+              onClick={() => consultar(item.valor)}
             >
-              {periodo}
+              {item.rotulo}
             </button>
           ))}
         </div>
+
+        {erro && <p className="aviso-erro">{erro}</p>}
       </header>
 
       <section className="resumo" aria-label="Resumo do período">
         <div className="bloco-resumo">
           <small>Entrada</small>
-          <span className="valor-grande valor-entrada">{moeda(1520)}</span>
+          <span className="valor-grande valor-entrada">
+            {dados ? moeda(entrada) : '—'}
+          </span>
           <span className="aviso">vendas no período</span>
         </div>
         <div className="bloco-resumo">
           <small>Saída</small>
-          <span className="valor-grande valor-saida">{moeda(284.5)}</span>
+          <span className="valor-grande valor-saida">
+            {dados ? moeda(saida) : '—'}
+          </span>
           <span className="aviso">despesas no período</span>
         </div>
         <div className="bloco-resumo saldo-atual">
           <small>Saldo atual</small>
-          <span className="valor-grande">{moeda(1235.5)}</span>
+          <span className="valor-grande">{dados ? moeda(saldo) : '—'}</span>
           <span className="aviso">entradas − saídas</span>
         </div>
       </section>
@@ -94,25 +133,31 @@ function Home({ sair }) {
       <section className="secao" aria-labelledby="titulo-recentes">
         <div className="secao-titulo">
           <h2 id="titulo-recentes">Vendas e despesas recentes</h2>
-          <span className="nota">5 no período</span>
+          <span className="nota">{dados ? `${recentes.length} no período` : '…'}</span>
         </div>
-        <ul className="lista-recentes">
-          {RECENTES.map((item) => (
-            <li key={item.nome}>
-              <div className="linha-recente">
-                <span className="nome">{item.nome}</span>
-                <span className="detalhe">{item.detalhe}</span>
-              </div>
-              <span
-                className={`valor-recente ${
-                  item.tipo === 'venda' ? 'valor-entrada' : 'valor-saida'
-                }`}
-              >
-                {item.tipo === 'venda' ? '+' : '−'} {moeda(item.valor)}
-              </span>
-            </li>
-          ))}
-        </ul>
+        {recentes.length === 0 ? (
+          <p className="lista-vazia">
+            Nada registrado no período ainda.
+          </p>
+        ) : (
+          <ul className="lista-recentes">
+            {recentes.map((item) => (
+              <li key={item.id}>
+                <div className="linha-recente">
+                  <span className="nome">{item.titulo}</span>
+                  <span className="detalhe">{item.sub}</span>
+                </div>
+                <span
+                  className={`valor-recente ${
+                    item.tipo === 'venda' ? 'valor-entrada' : 'valor-saida'
+                  }`}
+                >
+                  {item.tipo === 'venda' ? '+' : '−'} {moeda(item.valor)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <section className="secao" aria-labelledby="titulo-estatisticas">
@@ -120,7 +165,7 @@ function Home({ sair }) {
           <h2 id="titulo-estatisticas">Estatísticas</h2>
         </div>
         <div className="grade-estatisticas">
-          {ESTATISTICAS.map((item) => (
+          {itensEstatisticas.map((item) => (
             <div className="item-estatistica" key={item.rotulo}>
               <small>{item.rotulo}</small>
               <span className="val-estatistica">{item.valor}</span>

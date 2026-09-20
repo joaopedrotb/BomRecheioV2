@@ -53,6 +53,7 @@ npm run pages:dev         # front-end + Functions juntos (porta 8788)
 | POST   | `/api/itens-venda`    | cria item (`id_venda`, `sabor`, `quantidade`) |
 | GET    | `/api/despesas`       | lista despesas (`?id=` filtra por id)    |
 | POST   | `/api/despesas`       | cria despesa                             |
+| GET    | `/api/resumo?periodo=hoje\|semana\|mes` | resumo do período: entrada, saída, saldo, 5 recentes e estatísticas |
 
 Senhas são armazenadas como hash PBKDF2 (nunca em texto puro). O login
 retorna apenas `{id, nome}` — nunca a senha.

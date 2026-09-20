@@ -9,6 +9,11 @@
   flex-direction: column;
 }
 
+.home.carregando {
+  opacity: 0.55;
+  transition: opacity var(--transicao);
+}
+
 .home > * {
   width: 100%;
   max-width: 640px;
@@ -180,6 +185,12 @@
 
 .lista-recentes li:last-child {
   border-bottom: none;
+}
+
+.lista-vazia {
+  padding-block: var(--espaco-3);
+  font-size: var(--corpo-menor);
+  color: var(--cor-texto-suave);
 }
 
 .linha-recente {
