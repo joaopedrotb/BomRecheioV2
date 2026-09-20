@@ -1,0 +1,247 @@
+/* ============================================================
+   Bom Recheio — Tela Nova Venda (formulário, sem total ainda)
+   Mobile-first: coluna única, botão fixo no rodapé.
+   ============================================================ */
+
+.tela-nova-venda {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.conteudo-form,
+.form-venda {
+  width: 100%;
+  max-width: 640px;
+  margin-inline: auto;
+  padding: var(--espaco-5) var(--espaco-4) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-5);
+}
+
+.form-venda {
+  padding-bottom: var(--espaco-8);
+}
+
+/* ---- Cabeçalho ---- */
+
+.cabecalho-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.voltar-link {
+  align-self: flex-start;
+  appearance: none;
+  background: none;
+  border: none;
+  padding: var(--espaco-2) 0;
+  font-family: var(--fonte-corpo);
+  font-size: var(--rotulo);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor-marrom-suave);
+  cursor: pointer;
+}
+
+.voltar-link:hover {
+  color: var(--cor-marrom-torrado);
+}
+
+.cabecalho-form h1 {
+  font-size: clamp(1.9rem, 6vw, 2.5rem);
+}
+
+.cabecalho-form p {
+  font-size: var(--corpo-menor);
+  color: var(--cor-texto-suave);
+}
+
+/* ---- Blocos do formulário ---- */
+
+.bloco-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  padding-bottom: var(--espaco-5);
+  border-bottom: var(--borda-fina);
+}
+
+.bloco-form:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.rotulo-grupo {
+  margin: 0;
+  font-size: var(--rotulo);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor-marrom-suave);
+}
+
+/* ---- Seletores (pacote e pagamento) ---- */
+
+.seletor-pacote {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espaco-3);
+}
+
+.opcoes-pagamento {
+  display: flex;
+  gap: var(--espaco-2);
+}
+
+.opcoes-pagamento .btn-opcao {
+  flex: 1;
+  min-height: 46px;
+  padding-inline: var(--espaco-2);
+  font-size: var(--corpo-menor);
+}
+
+.btn-opcao {
+  appearance: none;
+  min-height: 52px;
+  padding-inline: var(--espaco-4);
+  border: 1px solid var(--cor-marrom-divisoria);
+  border-radius: var(--raio-pilula);
+  background: var(--cor-superficie);
+  color: var(--cor-marrom-torrado);
+  font-family: var(--fonte-corpo);
+  font-size: var(--corpo);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--transicao),
+    color var(--transicao),
+    border-color var(--transicao);
+}
+
+.btn-opcao.ativo {
+  background: var(--cor-marrom-torrado);
+  border-color: var(--cor-marrom-torrado);
+  color: var(--cor-creme);
+}
+
+/* ---- Quantidades por sabor ---- */
+
+.lista-quantidades {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: var(--borda-fina);
+}
+
+.linha-sabor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-4);
+  padding-block: var(--espaco-3);
+  border-bottom: var(--borda-fina);
+}
+
+.linha-sabor .nome-sabor {
+  flex: 1;
+  font-weight: 600;
+  font-size: var(--corpo-menor);
+}
+
+.entrada-quantidade {
+  width: 88px;
+  min-height: 44px;
+  padding: var(--espaco-2) var(--espaco-3);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-marrom-divisoria);
+  border-radius: var(--raio-campo);
+  font-size: var(--corpo);
+  font-weight: 600;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  transition:
+    border-color var(--transicao),
+    box-shadow var(--transicao);
+}
+
+.entrada-quantidade:focus {
+  outline: none;
+  border-color: var(--cor-dourado);
+  box-shadow: 0 0 0 3px var(--cor-dourado-suave);
+}
+
+/* ---- Status do pacote (validação) ---- */
+
+.status-pacote {
+  margin: 0;
+  padding: var(--espaco-3) var(--espaco-4);
+  font-size: var(--corpo-menor);
+  font-weight: 600;
+  border-radius: 0 var(--raio-campo) var(--raio-campo) 0;
+}
+
+.status-pacote.alerta {
+  color: var(--cor-marrom-torrado);
+  background: var(--cor-dourado-suave);
+  border-left: 3px solid var(--cor-dourado);
+}
+
+.status-pacote.ok {
+  color: var(--cor-marrom-suave);
+}
+
+/* ---- Taxa de entrega ---- */
+
+.campo-taxa {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--espaco-3);
+}
+
+.campo-taxa .campo {
+  flex: 1;
+}
+
+.link-zera {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: var(--espaco-2) 0;
+  font-family: var(--fonte-corpo);
+  font-size: var(--corpo-menor);
+  font-weight: 600;
+  color: var(--cor-dourado);
+  cursor: pointer;
+}
+
+.link-zera:disabled {
+  color: var(--cor-marrom-suave);
+  cursor: default;
+}
+
+/* ---- Barra de ações (fixa no rodapé) ---- */
+
+.nova-venda-acoes {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: var(--espaco-3);
+  padding: var(--espaco-4);
+  padding-bottom: calc(var(--espaco-4) + env(safe-area-inset-bottom, 0px));
+  background: var(--cor-fundo);
+  border-top: var(--borda-fina);
+  margin-top: auto;
+}
+
+.nova-venda-acoes > * {
+  width: 100%;
+  margin-inline: auto;
+}
+
+.nova-venda-acoes .btn {
+  flex: 1;
+}

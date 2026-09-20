@@ -19,7 +19,7 @@ function compras(total) {
   return total === 1 ? '1 compra' : `${total} compras`
 }
 
-function Home({ sair }) {
+function Home({ sair, irParaVenda }) {
   const { usuario } = useUsuario()
   const [periodo, setPeriodo] = useState('semana')
   const [estado, setEstado] = useState({ dados: null, erro: '' })
@@ -176,7 +176,7 @@ function Home({ sair }) {
       </section>
 
       <nav className="barra-acoes" aria-label="Ações principais">
-        <Button type="button">Nova Venda</Button>
+        <Button type="button" onClick={irParaVenda}>Nova Venda</Button>
         <Button type="button" variant="secundario">
           Nova Despesa
         </Button>
