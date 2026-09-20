@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import Button from '../components/Button.jsx'
 import Campo from '../components/Campo.jsx'
+import { api } from '../api.js'
+import { moeda } from '../formatar.js'
+import { useUsuario } from '../contexto/useUsuario.js'
 import './../styles/nova-venda.css'
 
 const PACOTES = [100, 50]
@@ -15,7 +18,19 @@ const SABORES = [
   'Risole de carne',
 ]
 
+const PRECOS = {
+  100: { normal: 60, cartao: 63 },
+  50: { normal: 30, cartao: 33 },
+}
+
+function precoBase(pacote, pagamento) {
+  return pagamento === 'Cartão'
+    ? PRECOS[pacote].cartao
+    : PRECOS[pacote].normal
+}
+
 function NovaVenda({ voltar }) {
+  const { usuario } = useUsuario()
   const [pacote, setPacote] = useState(100)
   const [pagamento, setPagamento] = useState('Pix')
   const [quantidades, setQuantidades] = useState(() =>
@@ -23,6 +38,8 @@ function NovaVenda({ voltar }) {
   )
   const [taxa, setTaxa] = useState(3)
   const [nomeComprador, setNomeComprador] = useState('')
+  const [salvando, setSalvando] = useState(false)
+  const [erro, setErro] = useState('')
 
   function mudarQuantidade(sabor, valor) {
     setQuantidades((atual) => ({ ...atual, [sabor]: valor }))
@@ -42,8 +59,33 @@ function NovaVenda({ voltar }) {
         ? `Faltam ${falta} unidades para completar o pacote de ${pacote}.`
         : `A soma passou o pacote em ${Math.abs(falta)} unidades.`
 
+  const taxaNumero = Number(taxa) || 0
+  const base = precoBase(pacote, pagamento)
+  const total = base + taxaNumero
+  const podeRegistrar = pacoteOk && nomeComprador.trim() !== '' && !salvando
+
   function registrar(evento) {
     evento.preventDefault()
+    if (!pacoteOk || !nomeComprador.trim() || salvando) return
+    setSalvando(true)
+    setErro('')
+    api('/vendas', {
+      metodo: 'POST',
+      corpo: {
+        vendedor: usuario.nome,
+        nome_comprador: nomeComprador.trim(),
+        tipo_pacote: `Pacote ${pacote} unidades`,
+        forma_pagamento: pagamento,
+        taxa_entrega: taxaNumero,
+        valor_total: total,
+        itens: SABORES.filter((sabor) => (Number(quantidades[sabor]) || 0) > 0).map(
+          (sabor) => ({ sabor, quantidade: Number(quantidades[sabor]) }),
+        ),
+      },
+    })
+      .then(() => voltar())
+      .catch((err) => setErro(err.message))
+      .finally(() => setSalvando(false))
   }
 
   return (
@@ -153,9 +195,21 @@ function NovaVenda({ voltar }) {
       </form>
 
       <nav className="nova-venda-acoes" aria-label="Ações do formulário">
-        <Button type="submit" form="nova-venda" bloqueio disabled={!pacoteOk}>
-          Registrar venda
-        </Button>
+        <div className="rodape-venda">
+          <div className="linha-total">
+            <span>Total da venda</span>
+            <strong className="valor-total">{moeda(total)}</strong>
+          </div>
+          {erro && <p className="aviso-erro">{erro}</p>}
+          <Button
+            type="submit"
+            form="nova-venda"
+            bloqueio
+            disabled={!podeRegistrar}
+          >
+            {salvando ? 'Salvando…' : 'Registrar venda'}
+          </Button>
+        </div>
       </nav>
     </div>
   )

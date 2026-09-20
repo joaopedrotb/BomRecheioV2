@@ -13,7 +13,7 @@ export async function onRequestGet({ env, request }) {
 
 export async function onRequestPost({ env, request }) {
   const body = await jsonBody(request);
-  const { vendedor, nome_comprador, tipo_pacote, forma_pagamento } = body ?? {};
+  const { vendedor, nome_comprador, tipo_pacote, forma_pagamento, itens } = body ?? {};
   const taxa_entrega = Number(body?.taxa_entrega ?? 0);
   const valor_total = Number(body?.valor_total ?? 0);
 
@@ -24,11 +24,29 @@ export async function onRequestPost({ env, request }) {
     return fail('taxa_entrega e valor_total devem ser numéricos');
   }
 
-  const result = await env.DB.prepare(
+  const listaItens = Array.isArray(itens) ? itens : [];
+  for (const item of listaItens) {
+    const qtd = Number(item?.quantidade);
+    if (!item?.sabor || !Number.isInteger(qtd) || qtd <= 0) {
+      return fail('itens devem ter sabor e quantidade inteira maior que zero');
+    }
+  }
+
+  const { meta } = await env.DB.prepare(
     `INSERT INTO vendas (vendedor, nome_comprador, tipo_pacote, forma_pagamento, taxa_entrega, valor_total)
      VALUES (?, ?, ?, ?, ?, ?)`
   )
     .bind(vendedor, nome_comprador, tipo_pacote, forma_pagamento, taxa_entrega, valor_total)
     .run();
-  return ok({ id: result.meta.last_row_id }, 201);
+
+  const idVenda = meta.last_row_id;
+
+  if (listaItens.length > 0) {
+    const insereItem = env.DB.prepare(
+      'INSERT INTO itens_venda (id_venda, sabor, quantidade) VALUES (?, ?, ?)'
+    );
+    await env.DB.batch(listaItens.map((item) => insereItem.bind(idVenda, item.sabor, Number(item.quantidade))));
+  }
+
+  return ok({ id: idVenda }, 201);
 }

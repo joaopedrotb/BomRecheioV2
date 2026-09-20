@@ -237,11 +237,37 @@
   margin-top: auto;
 }
 
-.nova-venda-acoes > * {
+.rodape-venda {
   width: 100%;
+  max-width: 640px;
   margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
 }
 
-.nova-venda-acoes .btn {
-  flex: 1;
+.linha-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espaco-3);
+}
+
+.linha-total > span {
+  font-size: var(--rotulo);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor-marrom-suave);
+}
+
+.valor-total {
+  font-family: var(--fonte-titulo);
+  font-size: clamp(1.4rem, 5vw, 1.7rem);
+  color: var(--cor-marrom-torrado);
+  font-variant-numeric: tabular-nums;
+}
+
+.rodape-venda .aviso-erro {
+  margin: 0;
 }
