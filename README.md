@@ -45,10 +45,24 @@ npm run pages:dev         # front-end + Functions juntos (porta 8788)
 | Método | Rota                  | Descrição                                |
 | ------ | --------------------- | ---------------------------------------- |
 | GET    | `/api/usuarios`       | lista usuários                           |
-| POST   | `/api/usuarios`       | cria usuário (`nome`, `senha`)           |
+| POST   | `/api/usuarios`       | cria usuário (`nome`, `senha`); nome duplicado → 409 |
+| POST   | `/api/login`          | valida credenciais e retorna `{id, nome}` |
 | GET    | `/api/vendas`         | lista vendas (`?id=` filtra por id)      |
 | POST   | `/api/vendas`         | cria venda                               |
 | GET    | `/api/itens-venda`    | lista itens (`?id_venda=` filtra)        |
 | POST   | `/api/itens-venda`    | cria item (`id_venda`, `sabor`, `quantidade`) |
 | GET    | `/api/despesas`       | lista despesas (`?id=` filtra por id)    |
 | POST   | `/api/despesas`       | cria despesa                             |
+
+Senhas são armazenadas como hash PBKDF2 (nunca em texto puro). O login
+retorna apenas `{id, nome}` — nunca a senha.
+
+## Vendedores iniciais (provisórios)
+
+```bash
+npm run seed:local    # 3 vendedores no banco local
+npm run seed:remote   # 3 vendedores no banco remoto
+```
+
+Nomes de exemplo (senha provisória `123456`): Mariana Souza, Carlos
+Oliveira e Fernanda Lima. Serão substituídos pelos vendedores reais.

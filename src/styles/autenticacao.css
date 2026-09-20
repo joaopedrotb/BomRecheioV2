@@ -1,0 +1,75 @@
+/* ============================================================
+   Bom Recheio — Telas de autenticação (Login/Cadastro)
+   Mobile-first: coluna única, alvo de toque confortável.
+   ============================================================ */
+
+.autenticacao {
+  max-width: 420px;
+  margin-inline: auto;
+  padding: var(--espaco-7) var(--espaco-4) var(--espaco-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-5);
+}
+
+.autenticacao header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.autenticacao h1 {
+  font-size: clamp(1.9rem, 6vw, 2.5rem);
+}
+
+.autenticacao header p {
+  font-size: var(--corpo-menor);
+  max-width: 34ch;
+}
+
+.marca-mini {
+  font-family: var(--fonte-titulo);
+  font-size: var(--rotulo);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--cor-dourado);
+  margin: 0;
+}
+
+.painel-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+}
+
+.aviso-erro {
+  margin: 0;
+  padding: var(--espaco-3) var(--espaco-4);
+  font-size: var(--corpo-menor);
+  font-weight: 600;
+  color: var(--cor-marrom-torrado);
+  background: var(--cor-dourado-suave);
+  border-left: 3px solid var(--cor-dourado);
+  border-radius: 0 var(--raio-campo) var(--raio-campo) 0;
+}
+
+.alternar {
+  border-top: var(--borda-fina);
+  padding-top: var(--espaco-4);
+  font-size: var(--corpo-menor);
+  color: var(--cor-texto-suave);
+}
+
+.alternar button {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  font-weight: 600;
+  color: var(--cor-marrom-torrado);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}

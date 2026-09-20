@@ -15,6 +15,7 @@ dist-ssr
 # Cloudflare/Wrangler
 .wrangler
 .dev.vars
+scripts/seed.sql
 
 # Editor directories and files
 .vscode/*

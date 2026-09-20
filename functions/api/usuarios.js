@@ -1,4 +1,5 @@
 import { ok, fail, jsonBody } from '../_shared/json.js';
+import { hashSenha } from '../_shared/password.js';
 
 export async function onRequestGet({ env }) {
   const { results } = await env.DB.prepare(
@@ -13,10 +14,23 @@ export async function onRequestPost({ env, request }) {
   if (!nome || !senha) {
     return fail('Campos obrigatórios: nome, senha');
   }
-  const result = await env.DB.prepare(
-    'INSERT INTO usuarios (nome, senha) VALUES (?, ?)'
-  )
-    .bind(nome, senha)
-    .run();
-  return ok({ id: result.meta.last_row_id }, 201);
+
+  const existente = await env.DB.prepare('SELECT id FROM usuarios WHERE nome = ?')
+    .bind(nome)
+    .first();
+  if (existente) {
+    return fail('Já existe um usuário com esse nome', 409);
+  }
+
+  const hash = await hashSenha(senha);
+  let result;
+  try {
+    result = await env.DB.prepare('INSERT INTO usuarios (nome, senha) VALUES (?, ?)')
+      .bind(nome, hash)
+      .run();
+  } catch {
+    return fail('Já existe um usuário com esse nome', 409);
+  }
+
+  return ok({ id: result.meta.last_row_id, nome }, 201);
 }
