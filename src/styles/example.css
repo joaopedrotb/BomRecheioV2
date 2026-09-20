@@ -1,0 +1,156 @@
+/* ============================================================
+   Bom Recheio — Estilos da página de exemplo do design system
+   (não são telas do sistema; apenas demonstração dos tokens)
+   ============================================================ */
+
+.exemplo {
+  max-width: 640px;
+  margin-inline: auto;
+  padding: 0 var(--espaco-4) var(--espaco-8);
+}
+
+/* ---- Cabeçalho da página de exemplo ---- */
+
+.cabecalho-exemplo {
+  padding-block: var(--espaco-7) var(--espaco-5);
+  border-bottom: var(--borda-fina);
+}
+
+.marca-mini {
+  font-family: var(--fonte-titulo);
+  font-size: var(--rotulo);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cor-dourado);
+  margin-bottom: var(--espaco-3);
+}
+
+.cabecalho-exemplo h1 {
+  font-size: clamp(2.2rem, 7vw, 3.2rem);
+}
+
+.cabecalho-exemplo h1 em {
+  font-style: italic;
+  font-weight: 600;
+}
+
+.cabecalho-exemplo p {
+  margin-top: var(--espaco-3);
+  color: var(--cor-texto-suave);
+}
+
+/* ---- Blocos do guia ---- */
+
+.bloco {
+  padding-block: var(--espaco-6);
+  border-bottom: var(--borda-fina);
+}
+
+.bloco:last-child {
+  border-bottom: none;
+}
+
+.titulo-bloco {
+  display: flex;
+  align-items: baseline;
+  gap: var(--espaco-2);
+  margin-bottom: var(--espaco-4);
+}
+
+.titulo-bloco .marcador {
+  color: var(--cor-dourado);
+  font-family: var(--fonte-titulo);
+}
+
+.bloco > p {
+  max-width: 46ch;
+  color: var(--texto-suave, var(--cor-texto-suave));
+  margin-bottom: var(--espaco-4);
+}
+
+.bloco > p:last-child {
+  margin-bottom: 0;
+}
+
+/* ---- Demonstração de tipografia ---- */
+
+.demonstracao-tipografia {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+}
+
+.linha-titulo {
+  border-bottom: var(--borda-fina);
+  padding-block: var(--espaco-3);
+}
+
+.linha-titulo small {
+  display: block;
+  font-family: var(--fonte-corpo);
+  font-size: var(--rotulo);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cor-marrom-suave);
+  margin-bottom: var(--espaco-1);
+}
+
+.linha-corpo small {
+  color: var(--cor-marrom-suave);
+  font-size: var(--corpo-menor);
+}
+
+.numero-amostra {
+  font-size: var(--numero-grande);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* ---- Botões ---- */
+
+.grade-amostra-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+}
+
+/* ---- Lista com divisórias finas ---- */
+
+.lista-divisoria {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-divisoria li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espaco-4);
+  padding-block: var(--espaco-3);
+  border-bottom: var(--borda-fina);
+}
+
+.lista-divisoria li:last-child {
+  border-bottom: none;
+}
+
+.lista-divisoria li:first-child {
+  padding-top: 0;
+}
+
+.item-descricao {
+  font-size: var(--corpo-menor);
+  color: var(--cor-texto-suave);
+}
+
+/* ---- Rodapé da página de exemplo ---- */
+
+.rodape-exemplo {
+  padding-top: var(--espaco-6);
+  text-align: center;
+  font-size: var(--corpo-menor);
+  color: var(--cor-texto-suave);
+}

@@ -1,0 +1,74 @@
+/* ============================================================
+   Bom Recheio — Estilos base
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fonte-corpo);
+  font-size: var(--corpo);
+  line-height: 1.5;
+  color: var(--cor-texto);
+  background-color: var(--cor-fundo);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-weight: 600;
+  line-height: 1.12;
+  color: var(--cor-texto);
+}
+
+h1 { font-size: var(--titulo-1); }
+h2 { font-size: var(--titulo-2); }
+h3 { font-size: var(--titulo-3); }
+
+p {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+::selection {
+  background: var(--cor-dourado-suave);
+  color: var(--cor-marrom-torrado);
+}
+
+/* ---- Utilitários de valor ----
+   Aplicar SEMPRE por meio dessas classes; nunca trocar as cores
+   de entrada/saída no markup ou em outros componentes. */
+.valor-entrada {
+  color: var(--cor-entrada);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.valor-saida {
+  color: var(--cor-saida);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.texto-suave {
+  color: var(--cor-texto-suave);
+}

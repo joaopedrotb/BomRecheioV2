@@ -1,0 +1,68 @@
+/* ============================================================
+   Bom Recheio — Design tokens
+   Estética de comida caseira: creme, marrom torrado e dourado.
+   Nenhuma das variáveis abaixo deve ser usada fora deste arquivo
+   de forma solta; componentes consomem apenas as variáveis.
+   ============================================================ */
+
+:root {
+  /* ---- Cores principais ---- */
+  --cor-creme: #F2E8D8;
+  --cor-marrom-torrado: #4A2E1B;
+  --cor-dourado: #C68A2E;
+  --cor-creme-claro: #FAF4E8;
+
+  /* --cor-entrada: EXCLUSIVAMENTE valores de entrada/venda.
+     --cor-saida:   EXCLUSIVAMENTE valores de saída/despesa.
+     Nenhuma outra cor deve sinalizar esses significados. */
+  --cor-entrada: #3F7A3F;
+  --cor-saida: #B84B2E;
+
+  /* ---- Derivadas (opacidade) ---- */
+  --cor-marrom-hover: #3A2513;
+  --cor-marrom-suave: rgba(74, 46, 27, 0.62);
+  --cor-marrom-divisoria: rgba(74, 46, 27, 0.14);
+  --cor-marrom-sobre-creme: rgba(74, 46, 27, 0.06);
+  --cor-dourado-suave: rgba(198, 138, 46, 0.18);
+
+  --cor-fundo: var(--cor-creme);
+  --cor-superficie: var(--cor-creme-claro);
+  --cor-texto: var(--cor-marrom-torrado);
+  --cor-texto-suave: var(--cor-marrom-suave);
+
+  /* ---- Tipografia ----
+     Fraunces (artesanal) apenas para títulos grandes.
+     Inter (limpa) para números, listas e formulários. */
+  --fonte-titulo: 'Fraunces', 'Georgia', serif;
+  --fonte-corpo: 'Inter', 'Segoe UI', system-ui, sans-serif;
+
+  --titulo-1: clamp(1.9rem, 5vw, 2.75rem);
+  --titulo-2: clamp(1.4rem, 3.8vw, 1.95rem);
+  --titulo-3: clamp(1.1rem, 2.5vw, 1.4rem);
+  --corpo: 1rem;
+  --corpo-menor: 0.875rem;
+  --rotulo: 0.75rem;
+  --numero-grande: clamp(1.5rem, 5vw, 2.1rem);
+
+  /* ---- Espaçamento ---- */
+  --espaco-1: 0.25rem;
+  --espaco-2: 0.5rem;
+  --espaco-3: 0.75rem;
+  --espaco-4: 1rem;
+  --espaco-5: 1.5rem;
+  --espaco-6: 2rem;
+  --espaco-7: 3rem;
+  --espaco-8: 4rem;
+
+  /* ---- Formas (evitar raios iguais em tudo) ----
+     Botões em pílula; campos levemente arredondados;
+     divisórias finas no marrom, sem sombra cinza. */
+  --raio-pilula: 999px;
+  --raio-campo: 10px;
+
+  --borda-fina: 1px solid var(--cor-marrom-divisoria);
+  --sombra-botao: 0 2px 0 rgba(74, 46, 27, 0.35);
+  --sombra-flutuante: 0 10px 28px rgba(74, 46, 27, 0.12);
+
+  --transicao: 140ms ease;
+}

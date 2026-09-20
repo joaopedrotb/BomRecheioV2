@@ -1,0 +1,171 @@
+/* ============================================================
+   Bom Recheio — Componentes base (botão e campo/formulário)
+   ============================================================ */
+
+/* ---- Botões ---- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-2);
+  min-height: 48px;
+  padding: 0 var(--espaco-5);
+  border: 1px solid transparent;
+  border-radius: var(--raio-pilula);
+  font-family: var(--fonte-corpo);
+  font-size: var(--corpo);
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--transicao),
+    color var(--transicao),
+    box-shadow var(--transicao),
+    transform var(--transicao);
+}
+
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--cor-dourado-suave);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.btn-primario {
+  background-color: var(--cor-marrom-torrado);
+  color: var(--cor-creme);
+  box-shadow: var(--sombra-botao);
+}
+
+.btn-primario:hover {
+  background-color: var(--cor-marrom-hover);
+}
+
+.btn-secundario {
+  background-color: transparent;
+  color: var(--cor-marrom-torrado);
+  border-color: var(--cor-marrom-torrado);
+}
+
+.btn-secundario:hover {
+  background-color: var(--cor-marrom-sobre-creme);
+}
+
+.btn-destaque {
+  background-color: var(--cor-superficie);
+  color: var(--cor-marrom-torrado);
+  border-color: var(--cor-dourado);
+}
+
+.btn-destaque:hover {
+  background-color: var(--cor-dourado);
+  color: var(--cor-creme);
+}
+
+.btn-bloqueio {
+  width: 100%;
+}
+
+/* ---- Campos (input / select / textarea) ---- */
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.campo label {
+  font-size: var(--rotulo);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor-marrom-suave);
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: var(--espaco-3) var(--espaco-4);
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-marrom-divisoria);
+  border-radius: var(--raio-campo);
+  font-size: var(--corpo);
+  transition:
+    border-color var(--transicao),
+    box-shadow var(--transicao);
+}
+
+.campo textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.campo input::placeholder {
+  color: rgba(74, 46, 27, 0.4);
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  outline: none;
+  border-color: var(--cor-dourado);
+  box-shadow: 0 0 0 3px var(--cor-dourado-suave);
+}
+
+.campo select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234A2E1B' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--espaco-4) center;
+  padding-right: var(--espaco-6);
+}
+
+/* Campo com prefixo (ex.: R$ ) */
+.campo-com-prefixo {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.campo-com-prefixo .campo-prefixo {
+  position: absolute;
+  left: var(--espaco-4);
+  color: var(--cor-marrom-suave);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.campo-com-prefixo input {
+  padding-left: calc(var(--espaco-4) + 1.6em);
+}
+
+/* ---- Grade de formulário (mobile-first) ---- */
+
+.grade-formulario {
+  display: grid;
+  gap: var(--espaco-4);
+}
+
+@media (min-width: 640px) {
+  .grade-formulario {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grade-formulario .grade-2 {
+    grid-column: span 2;
+  }
+}
