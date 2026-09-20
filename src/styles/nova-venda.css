@@ -134,6 +134,11 @@
   color: var(--cor-creme);
 }
 
+.btn-opcao:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--cor-dourado-suave);
+}
+
 /* ---- Quantidades por sabor ---- */
 
 .lista-quantidades {
@@ -270,7 +275,6 @@
 .valor-total {
   font-family: var(--fonte-titulo);
   font-size: clamp(1.4rem, 5vw, 1.7rem);
-  color: var(--cor-marrom-torrado);
   font-variant-numeric: tabular-nums;
 }
 

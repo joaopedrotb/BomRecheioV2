@@ -48,11 +48,11 @@ npm run pages:dev         # front-end + Functions juntos (porta 8788)
 | POST   | `/api/usuarios`       | cria usuário (`nome`, `senha`); nome duplicado → 409 |
 | POST   | `/api/login`          | valida credenciais e retorna `{id, nome}` |
 | GET    | `/api/vendas`         | lista vendas (`?id=` filtra por id)      |
-| POST   | `/api/vendas`         | cria venda                               |
+| POST   | `/api/vendas`         | cria venda + itens (`vendedor`, `nome_comprador`, `qtd_pacotes_100`, `qtd_pacotes_50`, `forma_pagamento`, `taxa_entrega`, `valor_total`, `itens[]`) |
 | GET    | `/api/itens-venda`    | lista itens (`?id_venda=` filtra)        |
 | POST   | `/api/itens-venda`    | cria item (`id_venda`, `sabor`, `quantidade`) |
 | GET    | `/api/despesas`       | lista despesas (`?id=` filtra por id)    |
-| POST   | `/api/despesas`       | cria despesa                             |
+| POST   | `/api/despesas`       | cria despesa (`item`, `descricao`, `preco`, `registrado_por`) |
 | GET    | `/api/resumo?periodo=hoje\|semana\|mes` | resumo do período: entrada, saída, saldo, 5 recentes e estatísticas |
 
 Senhas são armazenadas como hash PBKDF2 (nunca em texto puro). O login

@@ -34,11 +34,18 @@ export async function onRequestPost({ env, request }) {
   }
 
   const listaItens = Array.isArray(itens) ? itens : [];
+  let somaSabores = 0;
   for (const item of listaItens) {
     const qtd = Number(item?.quantidade);
     if (!item?.sabor || !Number.isInteger(qtd) || qtd <= 0) {
       return fail('itens devem ter sabor e quantidade inteira maior que zero');
     }
+    somaSabores += qtd;
+  }
+
+  const unidadesEsperadas = n100 * 100 + n50 * 50;
+  if (listaItens.length === 0 || somaSabores !== unidadesEsperadas) {
+    return fail(`a soma das quantidades (${somaSabores}) precisa fechar o total do pedido (${unidadesEsperadas})`);
   }
 
   const { meta } = await env.DB.prepare(

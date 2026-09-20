@@ -2,6 +2,10 @@ import { ok, fail } from '../_shared/json.js';
 
 const DIA_MS = 24 * 60 * 60 * 1000;
 
+function arredonda(valor) {
+  return Math.round((Number(valor) + Number.EPSILON) * 100) / 100;
+}
+
 function descrevePacotes(venda) {
   const partes = [];
   if (Number(venda.qtd_pacotes_100) > 0) {
@@ -85,8 +89,8 @@ export async function onRequestGet({ env, request }) {
     ligar('SELECT nome_comprador AS comprador, COUNT(*) AS total FROM vendas WHERE data_hora >= ? GROUP BY nome_comprador'),
   ]);
 
-  const entrada = Number(rEntrada.results?.[0]?.total ?? 0);
-  const saida = Number(rSaida.results?.[0]?.total ?? 0);
+  const entrada = arredonda(rEntrada.results?.[0]?.total ?? 0);
+  const saida = arredonda(rSaida.results?.[0]?.total ?? 0);
 
   const vendas = (rVendas.results ?? []).map((v) => ({
     tipo: 'venda',
@@ -117,7 +121,7 @@ export async function onRequestGet({ env, request }) {
     desde: desdeSql,
     entrada,
     saida,
-    saldo: entrada - saida,
+    saldo: arredonda(entrada - saida),
     recentes,
     estatisticas: {
       sabor_mais_vendido: saborMais ? { sabor: saborMais.sabor, quantidade: Number(saborMais.total) } : null,

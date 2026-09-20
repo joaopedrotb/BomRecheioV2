@@ -217,6 +217,7 @@
   font-size: var(--corpo);
   font-weight: 600;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---- Estatísticas ---- */

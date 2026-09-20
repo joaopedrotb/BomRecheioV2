@@ -222,7 +222,7 @@ function NovaVenda({ voltar }) {
         <div className="rodape-venda">
           <div className="linha-total">
             <span>Total da venda</span>
-            <strong className="valor-total">{moeda(total)}</strong>
+            <strong className="valor-total valor-entrada">{moeda(total)}</strong>
           </div>
           {erro && <p className="aviso-erro">{erro}</p>}
           <Button

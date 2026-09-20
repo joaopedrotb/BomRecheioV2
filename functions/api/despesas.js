@@ -19,8 +19,8 @@ export async function onRequestPost({ env, request }) {
   if (!item || !registrado_por) {
     return fail('Campos obrigatórios: item, registrado_por');
   }
-  if (Number.isNaN(preco)) {
-    return fail('preco deve ser numérico');
+  if (Number.isNaN(preco) || preco <= 0) {
+    return fail('preco deve ser numérico maior que zero');
   }
 
   const result = await env.DB.prepare(
