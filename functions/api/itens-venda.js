@@ -13,13 +13,17 @@ export async function onRequestGet({ env, request }) {
 
 export async function onRequestPost({ env, request }) {
   const body = await jsonBody(request);
-  const { id_venda, sabor, quantidade } = body ?? {};
-  if (!id_venda || !sabor || !quantidade) {
-    return fail('Campos obrigatórios: id_venda, sabor, quantidade');
+  const { id_venda, sabor, quantidade_frita, quantidade_nao_frita } = body ?? {};
+  if (!id_venda || !sabor) {
+    return fail('Campos obrigatórios: id_venda, sabor, quantidade_frita, quantidade_nao_frita');
   }
-  const qtd = Number(quantidade);
-  if (!Number.isInteger(qtd) || qtd <= 0) {
-    return fail('quantidade deve ser um inteiro maior que zero');
+  const frita = Number(quantidade_frita ?? 0);
+  const naoFrita = Number(quantidade_nao_frita ?? 0);
+  if (!Number.isInteger(frita) || frita < 0 || !Number.isInteger(naoFrita) || naoFrita < 0) {
+    return fail('quantidade_frita e quantidade_nao_frita devem ser inteiras maiores ou iguais a zero');
+  }
+  if (frita + naoFrita <= 0) {
+    return fail('pelo menos uma unidade (frita ou não frita) é necessária');
   }
 
   const venda = await env.DB.prepare('SELECT id FROM vendas WHERE id = ?')
@@ -30,9 +34,9 @@ export async function onRequestPost({ env, request }) {
   }
 
   const result = await env.DB.prepare(
-    'INSERT INTO itens_venda (id_venda, sabor, quantidade) VALUES (?, ?, ?)'
+    'INSERT INTO itens_venda (id_venda, sabor, quantidade_frita, quantidade_nao_frita) VALUES (?, ?, ?, ?)'
   )
-    .bind(id_venda, sabor, qtd)
+    .bind(id_venda, sabor, frita, naoFrita)
     .run();
   return ok({ id: result.meta.last_row_id }, 201);
 }

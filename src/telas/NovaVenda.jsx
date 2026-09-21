@@ -20,9 +20,13 @@ const SABORES = [
 ]
 
 const PRECOS = {
+  // O cento (100) tem variação: preço acima é do cento frito;
+  // o não frito desconta R$ 0,05 por unidade (R$ 5,00 por cento).
   100: { normal: 60, cartao: 63 },
   50: { normal: 30, cartao: 33 },
 }
+
+const DESCONTO_NAO_FRITO_UNIDADE = 0.05
 
 function precoBase(pacote, pagamento) {
   return pagamento === 'Cartão'
@@ -36,25 +40,30 @@ function NovaVenda({ voltar }) {
   const [qtd50, setQtd50] = useState('')
   const [pagamento, setPagamento] = useState('Pix')
   const [quantidades, setQuantidades] = useState(() =>
-    Object.fromEntries(SABORES.map((sabor) => [sabor, ''])),
+    Object.fromEntries(
+      SABORES.map((sabor) => [sabor, { frita: '', naoFrita: '' }]),
+    ),
   )
   const [taxa, setTaxa] = useState(3)
   const [nomeComprador, setNomeComprador] = useState('')
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState('')
 
-  function mudarQuantidade(sabor, valor) {
-    setQuantidades((atual) => ({ ...atual, [sabor]: valor }))
+  function mudarQuantidade(sabor, campo, valor) {
+    setQuantidades((atual) => ({
+      ...atual,
+      [sabor]: { ...atual[sabor], [campo]: valor },
+    }))
   }
 
   const n100 = Number(qtd100) || 0
   const n50 = Number(qtd50) || 0
   const unidadesEsperadas = n100 * PACOTES_100 + n50 * PACOTES_50
 
-  const soma = SABORES.reduce(
-    (total, sabor) => total + (Number(quantidades[sabor]) || 0),
-    0,
-  )
+  const fritas = (sabor) => Number(quantidades[sabor]?.frita) || 0
+  const naoFritas = (sabor) => Number(quantidades[sabor]?.naoFrita) || 0
+
+  const soma = SABORES.reduce((total, sabor) => total + fritas(sabor) + naoFritas(sabor), 0)
   const falta = unidadesEsperadas - soma
   const pacoteOk = unidadesEsperadas > 0 && soma === unidadesEsperadas
 
@@ -67,10 +76,16 @@ function NovaVenda({ voltar }) {
           ? `Faltam ${falta} unidades para completar ${unidadesEsperadas}.`
           : `A soma passou em ${Math.abs(falta)} unidades.`
 
+  const totalNaoFrito = SABORES.reduce((total, sabor) => total + naoFritas(sabor), 0)
+  const unidadesComDesconto = Math.min(totalNaoFrito, n100 * PACOTES_100)
+  const descontoNaoFrito = unidadesComDesconto * DESCONTO_NAO_FRITO_UNIDADE
+
   const taxaNumero = Number(taxa) || 0
-  const base =
-    n100 * precoBase(PACOTES_100, pagamento) + n50 * precoBase(PACOTES_50, pagamento)
-  const total = base + taxaNumero
+  const salgados =
+    n100 * precoBase(PACOTES_100, pagamento) +
+    n50 * precoBase(PACOTES_50, pagamento) -
+    descontoNaoFrito
+  const total = salgados + taxaNumero
   const podeRegistrar = pacoteOk && nomeComprador.trim() !== '' && !salvando
 
   function registrar(evento) {
@@ -88,8 +103,12 @@ function NovaVenda({ voltar }) {
         forma_pagamento: pagamento,
         taxa_entrega: taxaNumero,
         valor_total: total,
-        itens: SABORES.filter((sabor) => (Number(quantidades[sabor]) || 0) > 0).map(
-          (sabor) => ({ sabor, quantidade: Number(quantidades[sabor]) }),
+        itens: SABORES.filter((sabor) => fritas(sabor) + naoFritas(sabor) > 0).map(
+          (sabor) => ({
+            sabor,
+            quantidade_frita: fritas(sabor),
+            quantidade_nao_frita: naoFritas(sabor),
+          }),
         ),
       },
     })
@@ -161,27 +180,55 @@ function NovaVenda({ voltar }) {
 
         <div className="bloco-form">
           <p className="rotulo-grupo">Sabores</p>
+          <p className="texto-suave">
+            Frita e não frita somam juntas; só o cento (100) tem desconto no não frito.
+          </p>
           <ul className="lista-quantidades">
             {SABORES.map((sabor) => (
               <li className="linha-sabor" key={sabor}>
                 <span className="nome-sabor">{sabor}</span>
-                <input
-                  className="entrada-quantidade"
-                  type="number"
-                  min="0"
-                  step="1"
-                  inputMode="numeric"
-                  aria-label={`Quantidade de ${sabor}`}
-                  placeholder="0"
-                  value={quantidades[sabor]}
-                  onChange={(e) => mudarQuantidade(sabor, e.target.value)}
-                />
+                <div className="grupo-quantidades">
+                  <label className="campo-quantidade">
+                    <span className="rotulo-quantidade">Frita</span>
+                    <input
+                      className="entrada-quantidade"
+                      type="number"
+                      min="0"
+                      step="1"
+                      inputMode="numeric"
+                      aria-label={`Quantidade frita de ${sabor}`}
+                      placeholder="0"
+                      value={quantidades[sabor].frita}
+                      onChange={(e) => mudarQuantidade(sabor, 'frita', e.target.value)}
+                    />
+                  </label>
+                  <label className="campo-quantidade">
+                    <span className="rotulo-quantidade">Não frita</span>
+                    <input
+                      className="entrada-quantidade"
+                      type="number"
+                      min="0"
+                      step="1"
+                      inputMode="numeric"
+                      aria-label={`Quantidade não frita de ${sabor}`}
+                      placeholder="0"
+                      value={quantidades[sabor].naoFrita}
+                      onChange={(e) => mudarQuantidade(sabor, 'naoFrita', e.target.value)}
+                    />
+                  </label>
+                </div>
               </li>
             ))}
           </ul>
           <p className={`status-pacote ${pacoteOk ? 'ok' : 'alerta'}`}>
             {statusSom}
           </p>
+          {unidadesComDesconto > 0 && (
+            <p className="texto-suave">
+              {unidadesComDesconto} unidade{unidadesComDesconto === 1 ? '' : 's'} não frita
+              {unidadesComDesconto === 1 ? '' : 's'} com desconto (R$ 0,05 cada).
+            </p>
+          )}
         </div>
 
         <div className="bloco-form">

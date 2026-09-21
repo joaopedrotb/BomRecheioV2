@@ -85,7 +85,7 @@ export async function onRequestGet({ env, request }) {
     ligar('SELECT COALESCE(SUM(preco), 0) AS total FROM despesas WHERE data_hora >= ?'),
     ligar('SELECT id, data_hora, vendedor, nome_comprador, qtd_pacotes_100, qtd_pacotes_50, valor_total FROM vendas WHERE data_hora >= ? ORDER BY data_hora DESC, id DESC LIMIT 5'),
     ligar('SELECT id, data_hora, item, descricao, preco, registrado_por FROM despesas WHERE data_hora >= ? ORDER BY data_hora DESC, id DESC LIMIT 5'),
-    ligar('SELECT it.sabor AS sabor, SUM(it.quantidade) AS total FROM itens_venda it JOIN vendas v ON v.id = it.id_venda WHERE v.data_hora >= ? GROUP BY it.sabor'),
+    ligar('SELECT it.sabor AS sabor, SUM(it.quantidade_frita + it.quantidade_nao_frita) AS total FROM itens_venda it JOIN vendas v ON v.id = it.id_venda WHERE v.data_hora >= ? GROUP BY it.sabor'),
     ligar('SELECT nome_comprador AS comprador, COUNT(*) AS total FROM vendas WHERE data_hora >= ? GROUP BY nome_comprador'),
   ]);
 

@@ -152,21 +152,44 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--espaco-4);
+  gap: var(--espaco-3);
   padding-block: var(--espaco-3);
   border-bottom: var(--borda-fina);
 }
 
 .linha-sabor .nome-sabor {
   flex: 1;
+  min-width: 0;
   font-weight: 600;
   font-size: var(--corpo-menor);
 }
 
+.grupo-quantidades {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--espaco-2);
+  flex-shrink: 0;
+}
+
+.campo-quantidade {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.rotulo-quantidade {
+  font-size: var(--rotulo);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cor-marrom-suave);
+  text-align: right;
+}
+
 .entrada-quantidade {
-  width: 88px;
+  width: 76px;
   min-height: 44px;
-  padding: var(--espaco-2) var(--espaco-3);
+  padding: var(--espaco-2) var(--espaco-2);
   background: var(--cor-superficie);
   border: 1px solid var(--cor-marrom-divisoria);
   border-radius: var(--raio-campo);
@@ -183,6 +206,16 @@
   outline: none;
   border-color: var(--cor-dourado);
   box-shadow: 0 0 0 3px var(--cor-dourado-suave);
+}
+
+@media (max-width: 419px) {
+  .linha-sabor {
+    flex-wrap: wrap;
+  }
+
+  .linha-sabor .nome-sabor {
+    flex-basis: 100%;
+  }
 }
 
 /* ---- Status do pacote (validação) ---- */

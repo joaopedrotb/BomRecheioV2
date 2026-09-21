@@ -36,11 +36,19 @@ export async function onRequestPost({ env, request }) {
   const listaItens = Array.isArray(itens) ? itens : [];
   let somaSabores = 0;
   for (const item of listaItens) {
-    const qtd = Number(item?.quantidade);
-    if (!item?.sabor || !Number.isInteger(qtd) || qtd <= 0) {
-      return fail('itens devem ter sabor e quantidade inteira maior que zero');
+    const frita = Number(item?.quantidade_frita);
+    const naoFrita = Number(item?.quantidade_nao_frita);
+    if (
+      !item?.sabor ||
+      !Number.isInteger(frita) ||
+      frita < 0 ||
+      !Number.isInteger(naoFrita) ||
+      naoFrita < 0 ||
+      frita + naoFrita <= 0
+    ) {
+      return fail('itens devem ter sabor e quantidades frita/não frita inteiras maiores ou iguais a zero, com pelo menos uma unidade');
     }
-    somaSabores += qtd;
+    somaSabores += frita + naoFrita;
   }
 
   const unidadesEsperadas = n100 * 100 + n50 * 50;
@@ -59,9 +67,13 @@ export async function onRequestPost({ env, request }) {
 
   if (listaItens.length > 0) {
     const insereItem = env.DB.prepare(
-      'INSERT INTO itens_venda (id_venda, sabor, quantidade) VALUES (?, ?, ?)'
+      'INSERT INTO itens_venda (id_venda, sabor, quantidade_frita, quantidade_nao_frita) VALUES (?, ?, ?, ?)'
     );
-    await env.DB.batch(listaItens.map((item) => insereItem.bind(idVenda, item.sabor, Number(item.quantidade))));
+    await env.DB.batch(
+      listaItens.map((item) =>
+        insereItem.bind(idVenda, item.sabor, Number(item.quantidade_frita), Number(item.quantidade_nao_frita))
+      )
+    );
   }
 
   return ok({ id: idVenda }, 201);
