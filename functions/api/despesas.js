@@ -15,18 +15,31 @@ export async function onRequestPost({ env, request }) {
   const body = await jsonBody(request);
   const { item, descricao, registrado_por } = body ?? {};
   const preco = Number(body?.preco ?? 0);
+  const qtdKg = Number(body?.qtd_kg ?? 0);
+  const precoKg = Number(body?.preco_kg ?? 0);
 
   if (!item || !registrado_por) {
     return fail('Campos obrigatórios: item, registrado_por');
   }
-  if (Number.isNaN(preco) || preco <= 0) {
-    return fail('preco deve ser numérico maior que zero');
+
+  const porKg = qtdKg > 0 && precoKg > 0;
+  const valorFinal = porKg ? qtdKg * precoKg : preco;
+
+  if (Number.isNaN(valorFinal) || valorFinal <= 0) {
+    return fail('informe o preço ou a quantidade (kg) com o preço por kg');
   }
 
   const result = await env.DB.prepare(
-    'INSERT INTO despesas (item, descricao, preco, registrado_por) VALUES (?, ?, ?, ?)'
+    'INSERT INTO despesas (item, descricao, preco, qtd_kg, preco_kg, registrado_por) VALUES (?, ?, ?, ?, ?, ?)'
   )
-    .bind(item, descricao ?? null, preco, registrado_por)
+    .bind(
+      item,
+      descricao ?? null,
+      valorFinal,
+      porKg ? qtdKg : null,
+      porKg ? precoKg : null,
+      registrado_por,
+    )
     .run();
   return ok({ id: result.meta.last_row_id }, 201);
 }

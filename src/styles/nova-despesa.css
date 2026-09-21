@@ -93,6 +93,38 @@
   }
 }
 
+/* ---- Campos por kilo ---- */
+
+.campo-por-kilo-aviso {
+  margin: 0;
+  font-size: var(--corpo-menor);
+  color: var(--cor-texto-suave);
+}
+
+.campo-duplo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espaco-4);
+}
+
+@media (max-width: 420px) {
+  .campo-duplo {
+    grid-template-columns: 1fr;
+  }
+}
+
+.total-calculado {
+  margin: 0;
+  padding: var(--espaco-2) var(--espaco-3);
+  background: var(--cor-dourado-suave);
+  border-left: 3px solid var(--cor-dourado);
+  border-radius: 0 var(--raio-campo) var(--raio-campo) 0;
+  font-family: var(--fonte-titulo);
+  font-size: var(--titulo-3);
+  font-variant-numeric: tabular-nums;
+  color: var(--cor-marrom-torrado);
+}
+
 /* ---- Barra de ações (fixa no rodapé) ---- */
 
 .nova-despesa-acoes {

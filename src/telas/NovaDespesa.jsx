@@ -3,6 +3,7 @@ import Button from '../components/Button.jsx'
 import Campo from '../components/Campo.jsx'
 import { api } from '../api.js'
 import { useUsuario } from '../contexto/useUsuario.js'
+import { moeda } from '../formatar.js'
 import './../styles/nova-despesa.css'
 
 const ITENS_FIXOS = [
@@ -39,14 +40,21 @@ function NovaDespesa({ voltar }) {
   const [item, setItem] = useState('')
   const [outroItem, setOutroItem] = useState('')
   const [preco, setPreco] = useState('')
+  const [kg, setKg] = useState('')
+  const [precoKg, setPrecoKg] = useState('')
   const [descricao, setDescricao] = useState('')
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState('')
 
   const precoNumero = Number(preco)
+  const quantidadeKg = Number(kg)
+  const precoPorKg = Number(precoKg)
+  const calculoPorKg = quantidadeKg > 0 && precoPorKg > 0
+  const totalCalculado = calculoPorKg ? quantidadeKg * precoPorKg : null
+  const precoFinal = totalCalculado ?? precoNumero
   const itemFinal = item === ITEM_OUTROS ? outroItem.trim() : item
-  const podeRegistrar =
-    !salvando && itemFinal !== '' && preco !== '' && precoNumero > 0
+  const precoValido = totalCalculado !== null || (preco !== '' && precoNumero > 0)
+  const podeRegistrar = !salvando && itemFinal !== '' && precoValido
 
   function registrar(evento) {
     evento.preventDefault()
@@ -58,7 +66,9 @@ function NovaDespesa({ voltar }) {
       corpo: {
         item: itemFinal,
         descricao: descricao.trim() || null,
-        preco: precoNumero,
+        preco: precoFinal,
+        qtd_kg: calculoPorKg ? quantidadeKg : null,
+        preco_kg: calculoPorKg ? precoPorKg : null,
         registrado_por: usuario.nome,
       },
     })
@@ -122,9 +132,38 @@ function NovaDespesa({ voltar }) {
 
         <div className="bloco-form">
           <p className="rotulo-grupo">Valor e detalhes</p>
+          <p className="texto-suave campo-por-kilo-aviso">
+            Vende por quilo? Informe a quantidade e o preço por kg.
+          </p>
+          <div className="campo-duplo">
+            <Campo
+              id="nova-despesa-kg"
+              label="Quantidade (kg)"
+              type="number"
+              min="0"
+              step="0.01"
+              inputMode="decimal"
+              value={kg}
+              onChange={(e) => setKg(e.target.value)}
+            />
+            <Campo
+              id="nova-despesa-preco-kg"
+              label="Preço por kg"
+              prefixo="R$"
+              type="number"
+              min="0"
+              step="0.01"
+              inputMode="decimal"
+              value={precoKg}
+              onChange={(e) => setPrecoKg(e.target.value)}
+            />
+          </div>
+          {totalCalculado !== null && (
+            <p className="total-calculado">Total: {moeda(totalCalculado)}</p>
+          )}
           <Campo
             id="nova-despesa-preco"
-            label="Preço"
+            label="Preço manual (se não for por quilo)"
             prefixo="R$"
             type="number"
             min="0"
