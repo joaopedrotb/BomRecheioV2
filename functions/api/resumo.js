@@ -81,12 +81,12 @@ export async function onRequestGet({ env, request }) {
   const ligar = (sql) => env.DB.prepare(sql).bind(desdeSql);
 
   const [rEntrada, rSaida, rVendas, rDespesas, rSabores, rClientes] = await env.DB.batch([
-    ligar('SELECT COALESCE(SUM(valor_total), 0) AS total FROM vendas WHERE data_hora >= ?'),
+    ligar('SELECT COALESCE(SUM(valor_total), 0) AS total FROM vendas WHERE data_hora >= ? AND status = \'ativa\''),
     ligar('SELECT COALESCE(SUM(preco), 0) AS total FROM despesas WHERE data_hora >= ?'),
-    ligar('SELECT id, data_hora, vendedor, nome_comprador, qtd_pacotes_100, qtd_pacotes_50, valor_total FROM vendas WHERE data_hora >= ? ORDER BY data_hora DESC, id DESC LIMIT 5'),
+    ligar('SELECT id, data_hora, vendedor, nome_comprador, qtd_pacotes_100, qtd_pacotes_50, valor_total, data_entrega, status FROM vendas WHERE data_hora >= ? ORDER BY data_hora DESC, id DESC LIMIT 5'),
     ligar('SELECT id, data_hora, item, descricao, preco, registrado_por FROM despesas WHERE data_hora >= ? ORDER BY data_hora DESC, id DESC LIMIT 5'),
-    ligar('SELECT it.sabor AS sabor, SUM(it.quantidade_frita + it.quantidade_nao_frita) AS total FROM itens_venda it JOIN vendas v ON v.id = it.id_venda WHERE v.data_hora >= ? GROUP BY it.sabor'),
-    ligar('SELECT nome_comprador AS comprador, COUNT(*) AS total FROM vendas WHERE data_hora >= ? GROUP BY nome_comprador'),
+    ligar('SELECT it.sabor AS sabor, SUM(it.quantidade_frita + it.quantidade_nao_frita) AS total FROM itens_venda it JOIN vendas v ON v.id = it.id_venda WHERE v.data_hora >= ? AND v.status = \'ativa\' GROUP BY it.sabor'),
+    ligar('SELECT nome_comprador AS comprador, COUNT(*) AS total FROM vendas WHERE data_hora >= ? AND status = \'ativa\' GROUP BY nome_comprador'),
   ]);
 
   const entrada = arredonda(rEntrada.results?.[0]?.total ?? 0);
@@ -99,6 +99,8 @@ export async function onRequestGet({ env, request }) {
     titulo: `Venda — ${descrevePacotes(v)}`,
     sub: `${v.nome_comprador} · ${v.vendedor}`,
     valor: Number(v.valor_total),
+    data_entrega: v.data_entrega || null,
+    status: v.status === 'desistencia' ? 'desistencia' : 'ativa',
   }));
   const despesas = (rDespesas.results ?? []).map((d) => ({
     tipo: 'despesa',

@@ -16,12 +16,16 @@ export async function onRequestPost({ env, request }) {
   const { vendedor, nome_comprador, forma_pagamento, itens, qtd_pacotes_100, qtd_pacotes_50 } = body ?? {};
   const taxa_entrega = Number(body?.taxa_entrega ?? 0);
   const valor_total = Number(body?.valor_total ?? 0);
+  const data_entrega = body?.data_entrega || null;
 
   if (!vendedor || !nome_comprador || !forma_pagamento) {
     return fail('Campos obrigatórios: vendedor, nome_comprador, forma_pagamento');
   }
   if (Number.isNaN(taxa_entrega) || Number.isNaN(valor_total)) {
     return fail('taxa_entrega e valor_total devem ser numéricos');
+  }
+  if (data_entrega !== null && !/^\d{4}-\d{2}-\d{2}$/.test(data_entrega)) {
+    return fail('data_entrega deve estar no formato AAAA-MM-DD');
   }
 
   const n100 = Number(qtd_pacotes_100 ?? 0);
@@ -57,10 +61,10 @@ export async function onRequestPost({ env, request }) {
   }
 
   const { meta } = await env.DB.prepare(
-    `INSERT INTO vendas (vendedor, nome_comprador, qtd_pacotes_100, qtd_pacotes_50, forma_pagamento, taxa_entrega, valor_total)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO vendas (vendedor, nome_comprador, qtd_pacotes_100, qtd_pacotes_50, forma_pagamento, taxa_entrega, valor_total, data_entrega)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
   )
-    .bind(vendedor, nome_comprador, n100, n50, forma_pagamento, taxa_entrega, valor_total)
+    .bind(vendedor, nome_comprador, n100, n50, forma_pagamento, taxa_entrega, valor_total, data_entrega)
     .run();
 
   const idVenda = meta.last_row_id;
@@ -77,4 +81,25 @@ export async function onRequestPost({ env, request }) {
   }
 
   return ok({ id: idVenda }, 201);
+}
+
+export async function onRequestPatch({ env, request }) {
+  const body = await jsonBody(request);
+  const id = Number(body?.id);
+  const status = body?.status;
+
+  if (!Number.isInteger(id) || id <= 0) {
+    return fail('id deve ser um inteiro maior que zero');
+  }
+  if (status !== 'ativa' && status !== 'desistencia') {
+    return fail('status inválido (use ativa ou desistencia)');
+  }
+
+  const venda = await env.DB.prepare('SELECT id FROM vendas WHERE id = ?').bind(id).first();
+  if (!venda) {
+    return fail('venda não encontrada', 404);
+  }
+
+  await env.DB.prepare('UPDATE vendas SET status = ? WHERE id = ?').bind(status, id).run();
+  return ok({ id, status });
 }

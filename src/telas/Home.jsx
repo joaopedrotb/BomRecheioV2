@@ -19,10 +19,19 @@ function compras(total) {
   return total === 1 ? '1 compra' : `${total} compras`
 }
 
+function formatarData(iso) {
+  if (!iso) return ''
+  const [ano, mes, dia] = iso.slice(0, 10).split('-')
+  if (!ano || !mes || !dia) return iso
+  return `${dia}/${mes}/${ano}`
+}
+
 function Home({ sair, irParaVenda, irParaDespesa }) {
   const { usuario } = useUsuario()
   const [periodo, setPeriodo] = useState('semana')
   const [estado, setEstado] = useState({ dados: null, erro: '' })
+  const [confirmando, setConfirmando] = useState(null)
+  const [desistindo, setDesistindo] = useState(false)
 
   useEffect(() => {
     let ativo = true
@@ -39,6 +48,20 @@ function Home({ sair, irParaVenda, irParaDespesa }) {
   }, [periodo])
 
   const consultar = (periodoNovo) => setPeriodo(periodoNovo)
+
+  function desistir(item) {
+    setDesistindo(true)
+    api('/vendas', {
+      metodo: 'PATCH',
+      corpo: { id: Number(item.id.slice(1)), status: 'desistencia' },
+    })
+      .then(() => {
+        setConfirmando(null)
+        consultar(periodo)
+      })
+      .catch((err) => setEstado((atual) => ({ ...atual, erro: err.message })))
+      .finally(() => setDesistindo(false))
+  }
 
   const carregando = estado.dados === null || estado.periodoConsultado !== periodo
 
@@ -142,18 +165,62 @@ function Home({ sair, irParaVenda, irParaDespesa }) {
         ) : (
           <ul className="lista-recentes">
             {recentes.map((item) => (
-              <li key={item.id}>
+              <li
+                key={item.id}
+                className={item.status === 'desistencia' ? 'recente-desistida' : undefined}
+              >
                 <div className="linha-recente">
-                  <span className="nome">{item.titulo}</span>
+                  <span className="nome">
+                    {item.titulo}
+                    {item.status === 'desistencia' && (
+                      <span className="etiqueta-desistencia">Desistência</span>
+                    )}
+                  </span>
                   <span className="detalhe">{item.sub}</span>
+                  {item.data_entrega && (
+                    <span className="detalhe">Entrega: {formatarData(item.data_entrega)}</span>
+                  )}
                 </div>
-                <span
-                  className={`valor-recente ${
-                    item.tipo === 'venda' ? 'valor-entrada' : 'valor-saida'
-                  }`}
-                >
-                  {item.tipo === 'venda' ? '+' : '−'} {moeda(item.valor)}
-                </span>
+                <div className="lado-recente">
+                  <span
+                    className={`valor-recente ${
+                      item.tipo === 'venda' ? 'valor-entrada' : 'valor-saida'
+                    }`}
+                  >
+                    {item.tipo === 'venda' && item.status !== 'desistencia' ? '+' : '−'}{' '}
+                    {moeda(item.valor)}
+                  </span>
+                  {item.tipo === 'venda' && item.status === 'ativa' &&
+                    (confirmando === item.id ? (
+                      <div className="confirma-desistencia">
+                        <span className="texto-confirma">Tem certeza?</span>
+                        <button
+                          type="button"
+                          className="btn-confirma"
+                          disabled={desistindo}
+                          onClick={() => desistir(item)}
+                        >
+                          {desistindo ? '…' : 'Sim'}
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-cancela"
+                          disabled={desistindo}
+                          onClick={() => setConfirmando(null)}
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className="link-desistencia"
+                        onClick={() => setConfirmando(item.id)}
+                      >
+                        Desistência
+                      </button>
+                    ))}
+                </div>
               </li>
             ))}
           </ul>

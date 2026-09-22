@@ -220,6 +220,98 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* ---- Desistência de pedido ---- */
+
+.lado-recente {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--espaco-2);
+  flex-shrink: 0;
+}
+
+.etiqueta-desistencia {
+  display: inline-block;
+  margin-left: var(--espaco-2);
+  padding: 2px var(--espaco-2);
+  border: 1px solid var(--cor-saida);
+  border-radius: var(--raio-pilula);
+  font-size: var(--rotulo);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cor-saida);
+  vertical-align: middle;
+}
+
+.recente-desistida .nome {
+  text-decoration: line-through;
+  color: var(--cor-texto-suave);
+}
+
+.recente-desistida .valor-recente {
+  color: var(--cor-texto-suave);
+  text-decoration: line-through;
+}
+
+.link-desistencia {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--fonte-corpo);
+  font-size: var(--rotulo);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cor-saida);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.link-desistencia:hover {
+  color: var(--cor-marrom-torrado);
+}
+
+.confirma-desistencia {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+}
+
+.confirma-desistencia .texto-confirma {
+  font-size: var(--rotulo);
+  font-weight: 600;
+  color: var(--cor-marrom-torrado);
+}
+
+.confirma-desistencia button {
+  appearance: none;
+  border: 1px solid var(--cor-marrom-divisoria);
+  border-radius: var(--raio-pilula);
+  padding: var(--espaco-1) var(--espaco-3);
+  font-family: var(--fonte-corpo);
+  font-size: var(--rotulo);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.confirma-desistencia button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.confirma-desistencia .btn-confirma {
+  background: var(--cor-marrom-torrado);
+  border-color: var(--cor-marrom-torrado);
+  color: var(--cor-creme);
+}
+
+.confirma-desistencia .btn-cancela {
+  background: transparent;
+  color: var(--cor-marrom-torrado);
+}
+
 /* ---- Estatísticas ---- */
 
 .grade-estatisticas {

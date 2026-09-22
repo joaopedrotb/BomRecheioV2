@@ -48,7 +48,8 @@ npm run pages:dev         # front-end + Functions juntos (porta 8788)
 | POST   | `/api/usuarios`       | cria usuário (`nome`, `senha`); nome duplicado → 409 |
 | POST   | `/api/login`          | valida credenciais e retorna `{id, nome}` |
 | GET    | `/api/vendas`         | lista vendas (`?id=` filtra por id)      |
-| POST   | `/api/vendas`         | cria venda + itens (`vendedor`, `nome_comprador`, `qtd_pacotes_100`, `qtd_pacotes_50`, `forma_pagamento`, `taxa_entrega`, `valor_total`, `itens[]`; cada item tem `sabor`, `quantidade_frita`, `quantidade_nao_frita`) |
+| POST   | `/api/vendas`         | cria venda + itens (`vendedor`, `nome_comprador`, `qtd_pacotes_100`, `qtd_pacotes_50`, `forma_pagamento`, `taxa_entrega`, `data_entrega` (opcional, `AAAA-MM-DD`), `valor_total`, `itens[]`; cada item tem `sabor`, `quantidade_frita`, `quantidade_nao_frita`) |
+| PATCH  | `/api/vendas`         | atualiza o status da venda (`id`, `status`: `ativa` ou `desistencia`) |
 | GET    | `/api/itens-venda`    | lista itens (`?id_venda=` filtra)        |
 | POST   | `/api/itens-venda`    | cria item (`id_venda`, `sabor`, `quantidade_frita`, `quantidade_nao_frita`) |
 | GET    | `/api/despesas`       | lista despesas (`?id=` filtra por id)    |

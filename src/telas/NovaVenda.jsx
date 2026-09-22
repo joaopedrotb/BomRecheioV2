@@ -45,6 +45,7 @@ function NovaVenda({ voltar }) {
     ),
   )
   const [taxa, setTaxa] = useState(3)
+  const [dataEntrega, setDataEntrega] = useState('')
   const [nomeComprador, setNomeComprador] = useState('')
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState('')
@@ -102,6 +103,7 @@ function NovaVenda({ voltar }) {
         qtd_pacotes_50: n50,
         forma_pagamento: pagamento,
         taxa_entrega: taxaNumero,
+        data_entrega: dataEntrega || null,
         valor_total: total,
         itens: SABORES.filter((sabor) => fritas(sabor) + naoFritas(sabor) > 0).map(
           (sabor) => ({
@@ -254,6 +256,13 @@ function NovaVenda({ voltar }) {
               Zerar taxa
             </button>
           </div>
+          <Campo
+            id="nova-venda-entrega"
+            label="Data de entrega"
+            type="date"
+            value={dataEntrega}
+            onChange={(e) => setDataEntrega(e.target.value)}
+          />
           <Campo
             id="nova-venda-comprador"
             label="Nome do comprador"
